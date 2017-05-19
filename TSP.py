@@ -12,15 +12,19 @@ class TSP(problem.Problem):
     mapp = []
     N = 0
 
-    def state_initialization(self):
+    def __init__(self):
         print("Enter board:")
         TSP.mapp.append(input().split())
         TSP.N = len(TSP.mapp[0])
         for x in range(len(TSP.mapp[0]) - 1):
             TSP.mapp.append(input().split())
+
         print(TSP.mapp)
-        startArr = random.sample(range(0, 5), 5)
+
+    def state_initialization(self):
+        startArr = random.sample(range(0, TSP.N), TSP.N)
         start = TSPState(None, None, 0, startArr)
+        start.cost = TSP.path_cost(self, start, start)
         TSP.initializedState.append(start)
         return start
 
@@ -43,12 +47,14 @@ class TSP(problem.Problem):
                 return tspState
 
         newState = TSPState(state, action, 0, board)
+        newState.cost = TSP.path_cost(self, newState, newState)
         TSP.initializedState.append(newState)
         return newState
 
     def path_cost(self, father, state):
         cost = 0
-        for i in range(0, TSP.N-1):
+        for i in range(0, TSP.N - 1):
+
             cost += int(TSP.mapp[state.position[i]][state.position[i + 1]])
         cost += int(TSP.mapp[state.position[TSP.N - 1]][state.position[0]])
         return cost
@@ -56,7 +62,7 @@ class TSP(problem.Problem):
     def goal_test(self, state):
         for action in TSP.actions(self, state):
             nstate = TSP.result(self, state, action)
-            if TSP.path_cost(self, state, nstate) > TSP.path_cost(self, state, state):
+            if nstate.cost < state.cost:
                 return False
         return True
 
