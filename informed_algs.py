@@ -2,6 +2,7 @@ from random import randint
 from random import random
 import math
 
+
 class sim_Anl:
     def search(self, problem):
         current = problem.state_initialization()
@@ -22,7 +23,7 @@ class sim_Anl:
             ap = sim_Anl.acceptance_probability(self, current, nextState, T)
             if ap > random():
                 current = nextState
-            # counter += 1
+                # counter += 1
 
     def schedule(self, T):
         alpha = .8
@@ -93,3 +94,48 @@ class Hill:
 
         return best
 
+
+class Genetic:
+    N = 20
+
+    def search(self, problem):
+
+        population = []
+        for i in range(0, Genetic.N):
+            population.append(problem.state_initialization())
+        while True:
+            best_possible=problem.best_value()
+            for indiv in population:
+                if problem.fitness(indiv) > .8 *best_possible :
+                    return indiv
+            newPopulation = []
+            for i in range(0, Genetic.N):
+                x = Genetic.randomSelection(self, population)
+                y = Genetic.randomSelection(self, population)
+                child = Genetic.produce(self, x, y)
+                if (1 / (len(newPopulation) + 1)) > random():
+                    child = Genetic.mutate(self, child)
+                newPopulation.append(child)
+            population = newPopulation
+
+    def randomSelection(self, population):
+        index = randint(0, len(population)-1)
+        return population[index]
+
+    def produce(self, x, y):
+        child = []
+        c = randint(0, len(x) - 1)
+        for i in range(0, len(x)):
+            if i < c:
+                child.append(x[i])
+            else:
+                child.append(y[i])
+        return child
+
+    def mutate(self, child):
+        n = randint(0, len(child)-1)
+        if child[n] == 0:
+            child[n] = 1
+        else:
+            child[n] = 0
+        return child
